@@ -16,11 +16,10 @@
 
 | 问题 | 观察结果 |
 |---|---|
-| 第一次 `make package` 得到的 BUILD_INFO（粘贴） | <填写> |
-| 修改一行、不提交，再次打包：BUILD_INFO 是否变化？二进制文件的 sha256 是否变化？（贴出两次的 sha256） | <填写> |
-| 两次 `go version -m` 输出中的 vcs 行有何不同？ | <填写> |
-| 仅凭 BUILD_INFO，能否回答该包是什么、在哪台机器上、何时、用哪份代码构建？哪一项信息会出错？ | <填写> |
-
+| 第一次 `make package` 得到的 BUILD_INFO（粘贴） | `name=enroll-conflict`<br>`version=1.0.0`<br>`build_no=1`<br>`run_id=local`<br>`commit=7b63b41c13f061439997b0e6e4eaa2af922a7aa1`<br>`go=go1.26.9` |
+| 修改一行、不提交，再次打包：BUILD_INFO 是否变化？二进制文件的 sha256 是否变化？（贴出两次的 sha256） | BUILD_INFO **没有变化**（`diff` 输出“BUILD_INFO 没有变化”）。二进制 sha256 **变化**：第一次为 `f23447d406c42af7dd35e23c2d1b2f15484cfb709cc9b4bb1262643694b8528e`；第二次为 `92e3e88728c3beb58788b99be3bf1e5a39a1d58efdadb42a16f8fc0300319c8b`。 |
+| 两次 `go version -m` 输出中的 vcs 行有何不同？ | `vcs.revision` 和 `vcs.time` 相同（均为 HEAD 的 `7b63b41c…` 和 `2026-10-12T16:26:07Z`）；**`vcs.modified` 由 `false` 变为 `true`**。 |
+| 仅凭 BUILD_INFO，能否回答该包是什么、在哪台机器上、何时、用哪份代码构建？哪一项信息会出错？ | **是什么**：能，`name=enroll-conflict`、`version=1.0.0`、`build_no=1` 都在。**在哪台机器上**：不能，BUILD_INFO 没有主机名、IP 或架构信息。**何时**：不能，没有构建时间戳；`run_id=local` 是手工填的值，不是真实运行 ID。**用哪份代码**：名义上有 `commit=7b63b41c…`，但它是 Git HEAD 的提交号，不包含未提交修改；第二次构建源码已变而 BUILD_INFO 完全没变，说明该字段不能代表实际构建内容。会出错的是“用哪份代码构建”这一项，其次是 `run_id` 无法追溯真实构建。 |
 ## 3. 证据
 
 | 项 | 链接或文本 |
