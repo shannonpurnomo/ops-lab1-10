@@ -1,0 +1,80 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version: 1.26.9
+
+      - name: 打印构建上下文
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_NUMBER: ${{ github.run_number }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          echo "event_name  = $EVENT_NAME"
+          echo "ref         = $REF"
+          echo "sha         = $SHA"
+          echo "head_sha    = $HEAD_SHA"
+          echo "run_number  = $RUN_NUMBER"
+          echo "run_id      = $RUN_ID"
+          echo "run_attempt = $RUN_ATTEMPT"
+
+      - name: fmt-check
+        run: make fmt-check
+
+      - name: vet
+        run: make vet
+
+      - name: test
+        run: make test
+
+      - name: package
+        if: github.event_name == 'push'
+        env:
+          VERSION: 0.0.0-main
+          BUILD_NO: ${{ github.run_number }}
+          RUN_ID: ${{ github.run_id }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          make package VERSION="$VERSION" BUILD_NO="$BUILD_NO" RUN_ID="$RUN_ID" COMMIT="$COMMIT"
+          D="dist/enroll-conflict_${VERSION}_linux_amd64"
+          if [ -f "$D/BUILD_INFO" ]; then
+            echo "--- BUILD_INFO ---"; cat "$D/BUILD_INFO"
+            echo "--- 二进制校验和 ---"; sha256sum "$D/enroll-conflict"
+          else
+            echo "（未找到解包目录）"; ls -R dist
+          fi
+          echo "--- tar.gz 校验和 ---"
+          sha256sum dist/*.tar.gz
+          for f in dist/*.tar.gz; do
+            [ -f "$f.sha256" ] || ( cd dist && sha256sum "$(basename "$f")" > "$(basename "$f").sha256" )
+          done
+          sha256sum dist/*.tar.gz.sha256
+
+      - name: upload artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v7
+        with:
+          name: enroll-conflict-${{ github.sha }}-${{ github.run_number }}
+          path: |
+            dist/*.tar.gz
+            dist/*.tar.gz.sha256
+          retention-days: 14
