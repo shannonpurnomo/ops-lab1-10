@@ -51,6 +51,5 @@ func Conflicts(a, b Section) bool {
 	if !weeksOverlap(a.Weeks, b.Weeks) {
 		return false
 	}
-	// 故意注入的缺陷：将 <= 改为 <，导致首尾相接的节次被判为不冲突
-	return a.Start < b.End && b.Start < a.End
+	return a.Start <= b.End && b.Start <= a.End
 }
