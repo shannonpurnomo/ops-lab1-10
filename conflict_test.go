@@ -52,4 +52,4 @@ func TestValid(t *testing.T) {
 			t.Errorf("%+v 应当不合法", s)
 		}
 	}
-}// tes format
+}
