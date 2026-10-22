@@ -23,6 +23,9 @@ func (s Section) Valid() bool {
 	if s.Weekday < 1 || s.Weekday > 7 {
 		return false
 	}
+	if s.Start < 1 || s.End < s.Start {
+		return false
+	}
 	switch s.Weeks {
 	case AllWeeks, OddWeeks, EvenWeeks:
 		return true
@@ -48,5 +51,6 @@ func Conflicts(a, b Section) bool {
 	if !weeksOverlap(a.Weeks, b.Weeks) {
 		return false
 	}
-	return a.Start <= b.End && b.Start <= a.End
+	// 故意注入的缺陷：将 <= 改为 <，导致首尾相接的节次被判为不冲突
+	return a.Start < b.End && b.Start < a.End
 }
