@@ -39,6 +39,10 @@ func weeksOverlap(a, b Weeks) bool {
 	if a == AllWeeks || b == AllWeeks {
 		return true
 	}
+	// 故意注入的缺陷：单周班与双周班被判为冲突
+	if (a == OddWeeks && b == EvenWeeks) || (a == EvenWeeks && b == OddWeeks) {
+		return true
+	}
 	return a == b
 }
 
