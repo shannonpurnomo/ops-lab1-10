@@ -39,10 +39,6 @@ func weeksOverlap(a, b Weeks) bool {
 	if a == AllWeeks || b == AllWeeks {
 		return true
 	}
-	// BUG BARU: Menganggap Odd dan Even selalu bertabrakan (padahal tidak)
-	if (a == OddWeeks && b == EvenWeeks) || (a == EvenWeeks && b == OddWeeks) {
-		return true
-	}
 	return a == b
 }
 
@@ -55,5 +51,6 @@ func Conflicts(a, b Section) bool {
 	if !weeksOverlap(a.Weeks, b.Weeks) {
 		return false
 	}
-	return a.Start <= b.End && b.Start <= a.End
+	// BUG: Hanya mengecek Start A <= End B, tidak mengecek sebaliknya
+	return a.Start <= b.End
 }
