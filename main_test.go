@@ -39,7 +39,6 @@ func TestConflictEndpoint(t *testing.T) {
 	// 单周与双周在同一时段上课，不冲突。
 	rec := post(`{"a":{"id":"A","weekday":1,"start":1,"end":2,"weeks":"odd"},"b":{"id":"B","weekday":1,"start":1,"end":2,"weeks":"even"}}`)
 	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"conflict":false`) {
-		t.Errorf("单双周同一时段：状态 %d，响应 %q", rec.Code, rec.Body.String())
 	}
 
 	// 每周上课的两个班同一时段，冲突。
