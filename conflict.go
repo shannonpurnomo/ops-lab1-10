@@ -23,6 +23,9 @@ func (s Section) Valid() bool {
 	if s.Weekday < 1 || s.Weekday > 7 {
 		return false
 	}
+	if s.Start < 1 || s.End < s.Start {
+		return false
+	}
 	switch s.Weeks {
 	case AllWeeks, OddWeeks, EvenWeeks:
 		return true
@@ -34,6 +37,10 @@ func (s Section) Valid() bool {
 // 任一方每周上课就一定有交集；否则只有单周对单周、双周对双周才有交集。
 func weeksOverlap(a, b Weeks) bool {
 	if a == AllWeeks || b == AllWeeks {
+		return true
+	}
+	// BUG BARU: Menganggap Odd dan Even selalu bertabrakan (padahal tidak)
+	if (a == OddWeeks && b == EvenWeeks) || (a == EvenWeeks && b == OddWeeks) {
 		return true
 	}
 	return a == b
