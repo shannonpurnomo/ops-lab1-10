@@ -53,4 +53,3 @@ func Conflicts(a, b Section) bool {
 	}
 	return a.Start <= b.End && b.Start <= a.End
 }
-
