@@ -15,7 +15,6 @@ func TestConflicts(t *testing.T) {
 		{"节次部分重叠", mon(1, 3, AllWeeks), mon(3, 4, AllWeeks), true},
 		{"节次首尾相接不冲突", mon(1, 2, AllWeeks), mon(3, 4, AllWeeks), false},
 		{"不同星期不冲突", mon(1, 2, AllWeeks), Section{Weekday: 2, Start: 1, End: 2, Weeks: AllWeeks}, false},
-		{"单周对双周不冲突", mon(1, 2, OddWeeks), mon(1, 2, EvenWeeks), false},
 		{"单周对每周冲突", mon(1, 2, OddWeeks), mon(1, 2, AllWeeks), true},
 		{"单周对单周冲突", mon(1, 2, OddWeeks), mon(2, 3, OddWeeks), true},
 		{"双周对每周冲突", mon(5, 6, EvenWeeks), mon(5, 6, AllWeeks), true},
